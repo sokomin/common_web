@@ -35,6 +35,9 @@
         gtag('js', new Date());
         gtag('config', 'UA-133658114-1');
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <script src="js/mt.js"></script>
+    <script src="js/rand_st.js"></script>
     <style>
         .container {
             max-width: 600px;
@@ -72,6 +75,37 @@
         }
     </script>
     <style>
+        /* ボタンの基本スタイル */
+        button {
+            font-size: 18px;
+            /* 文字サイズを大きく */
+            padding: 10px 20px;
+            /* 内部の余白を調整 */
+            background-color: #007BFF;
+            /* 背景色 */
+            color: white;
+            /* 文字色 */
+            border: none;
+            /* ボーダーを非表示に */
+            border-radius: 5px;
+            /* 角を丸く */
+            cursor: pointer;
+            /* ホバー時のカーソルを指の形に */
+            transition: background-color 0.3s;
+            /* 背景色の変更をなめらかに */
+        }
+
+        /* ボタンをホバーしたときのスタイル */
+        button:hover {
+            background-color: #0056b3;
+            /* 背景色を少し暗く */
+        }
+        /* 外部ライブラリを使っているので、止む無しで!important使う */
+        .MJXc-display {
+            text-align: left !important;
+        }
+    </style>
+    <style>
         #view-source {
             position: fixed;
             display: block;
@@ -85,7 +119,7 @@
 </head>
 
 <body>
-    <title>サンプル数の見積りと確率の検定</title>
+    <title>乱数シミュレータ＆検定</title>
     <meta name="description" content="">
     <meta http-equiv="Content-Style-Type" content="text/css">
     <meta http-equiv="Content-Script-Type" content="text/javascript">
@@ -191,73 +225,83 @@
             <!--main-->
             <div class="korea-content main-background">
                 <br>
-                <h2>サンプル数の見積りと確率の検定</h2>
+                <h2>乱数シミュレータ</h2>
                 <br>
-                <div class="container">
-                    <label for="p-hat">理論上の確率(p): </label>
-                    <input type="number" id="p-hat" min="0" max="100" step="0.01" required>％<br>
-                    <label for="actual-prob">実際の確率 (q): </label>
-                    <input type="number" id="actual-prob" min="0" max="100" step="0.01" required>％<br>
-                    <label for="sample-size">サンプルサイズ (n): </label>
-                    <input type="number" id="sample-size" min="1" required><br>
-                    <button onclick="calculateAndDisplayResults()">必要なサンプル数を計算</button>
-                    <button onclick="performHypothesisTest()">検定を実行</button>
-                    <div class="output" id="output"></div>
-                </div>
-                <div id="explain">
-                    <h4>使い方</h4>
-                    表記上の確率をpにいれます。(0～100%)<br>
-                    実際に測定した確率をqにいれます。(0～100%)<br>
-                    試行回数をnにいれます。<br>
-                    <br>
-                    (例) 40%で成功するギャンブルを20回試して10回成功したら、上から順に<br>
-                    40,50,20と入れてください。<br>
-                    <br>
-                    必要なサンプル数だけが欲しい場合、表記上の確率だけ入力すれば算出できます。<br>
+                乱数の回数：
+                <select id="numSelector">
+                    <option value="100">100</option>
+                    <option value="1000">1000</option>
+                    <option value="10000">10000</option>
+                    <option value="100000">100000</option>
+                    <option value="1000000">1000000</option>
+                </select>
+                <br>
+                <br>
+                乱数生成方法：
+                <select id="randomMethodSelector">
+                    <option value="mathRandom">デフォルト</option>
+                    <option value="mersenneTwister">メルセンヌツイスタ</option>
+                </select>
+                <br>
+                <br>
+                <button onclick="calculate()">計算</button>
+                <br>
+                <br>
 
-                    <br>
-                    <h4>補足</h4>
-                    ※二項分布、および大数の法則に従うモデルであることを前提としています。<br>
-                    ※サンプルサイズの出力に当たって、信頼区間の幅は5%と定義してます。(±2.5%)<br>
-                    ※小さいor大きい確率の場合は信頼区間の幅を狭めて計算しています。<br>
-                    <br>
-                    ※仮説検定はp=q、対立仮説はp≠qとしてます。両側検定です。<br>
-                    ※<b>帰無仮説を棄却</b>の場合・・・<b>異常値（レアケース）</b>です。実際の確率が想定の範囲内とは言い難いです。<br>
-                    ※<b>帰無仮説を棄却しない</b>場合・・・<b>正常値</b>です。実際の確率は想定の範囲内です。<br>
+                <h3>結果</h3>
+                <p>平均: <span id="mean">-</span></p>
+                <p>分散: <span id="variance">-</span></p>
+                <p>歪度: <span id="skewness">-</span></p>
+                <p>尖度: <span id="kurtosis">-</span></p>
+                <p>自己相関 (1次): <span id="autocorrelation">-</span></p>
+                <p>Kolmogorov-Smirnov D値: <span id="ksDValue">-</span></p>
+                <p>Kolmogorov-Smirnov 臨界値 (近似, α=0.05): <span id="ksCriticalValue">-</span></p>
+                <p>Kolmogorov-Smirnov 検定結果 (α=0.05): <span id="ksTestResult">-</span></p>
+                <br>
+                <br>
+                <br>
+                <br>
 
-                    <br>
-                    <br>
-                    <br>
-                    <h3></h3>
-                    <p><strong>信頼区間の幅とは？</strong></p>
-                    <p>信頼区間は、真の値（この場合は母比率）がどの程度の範囲に存在するかを示すツールです。<br>
-                        例えば、ある製品の満足度を調査したとき、サンプルから得られる満足度の割合（サンプル比率）が70%で、信頼区間が±5%だったとします。<br>
-                        これは、真の満足度の割合が65%から75%の間にあることを95%の確信をもって言える、ということを意味します。</p>
-                    <p>信頼区間の幅を適切設けることのメリットは以下の通りです。</p>
-                    <ol>
-                        <li><strong>明確な結果</strong>：5%の幅は、結果が明確であることを意味します。広すぎる信頼区間は、真の値が広い範囲に存在する可能性があることを示すため、結果の解釈を難しくします。
-                        </li>
-                        <li><strong>実用的な意味</strong>：実際のビジネスや研究の現場では、あまりにも細かい差は意味をなさないことが多いです。5%の幅は、実用的な意味での差異を捉えるのに十分な精度を持っています。
-                        </li>
-                        <li><strong>資源の節約</strong>：サンプルサイズを増やすことで、より狭い信頼区間を得ることができますが、それはコストや時間がかかることが多いです。5%の幅は、必要なリソースを適切に使用しながら、信頼性のある結果を得るためのバランスをとるものとなります。
-                        </li>
-                    </ol>
-                </div>
-                <script src="js/sample_n.js"></script>
+                <!-- 数式を表示 -->
+                <h4>使用した数式</h4>
+                <p>歪度（Skewness）:
+                    \[ \text{Skewness} = \frac{n}{(n-1)(n-2)} \left( \sum \left( \frac{X_i - \mu}{\sigma} \right)^3
+                    \right) \]
+                </p>
+                <p>尖度（Kurtosis）:
+                    \[ \text{Kurtosis} = \frac{n(n+1)}{(n-1)(n-2)(n-3)} \left( \sum \left( \frac{X_i - \mu}{\sigma}
+                    \right)^4 \right) - \frac{3(n-1)^2}{(n-2)(n-3)} \]
+                </p>
+                <p>自己相関（1次）:
+                    \[ \rho(1) = \frac{\sum_{i=1}^{n-1} (X_i - \bar{X})(X_{i+1} - \bar{X})}{\sum_{i=1}^{n} (X_i -
+                    \bar{X})^2} \]
+                </p>
+                <br>
+                ※Kolmogorov-Smirnov検定(KS検定)はサンプルデータが一様分布に従っているという仮説が合理的であるかどうかに使われます。<br>
+                [参考]<a
+                    href="https://ja.wikipedia.org/wiki/%E3%82%B3%E3%83%AB%E3%83%A2%E3%82%B4%E3%83%AD%E3%83%95%E2%80%93%E3%82%B9%E3%83%9F%E3%83%AB%E3%83%8E%E3%83%95%E6%A4%9C%E5%AE%9A">コルモゴロフ–スミルノフ検定</a>(Wikipedia)<br>
+                <br>
+                ※本ページは、デフォルトではjavsScriptの<b>Math.random()</b>を使って検証しています。<br>
+                メルセンヌツイスタは<a href="https://magicant.github.io/sjavascript/mt.html">Mersenne Twister in
+                    JavaScript</a>を利用しています。<br>
                 <br>
                 <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <!--書き換え禁止
+            </div>
+            <script src="js/sample_n.js"></script>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <!--書き換え禁止
                     Copyright (c) This site is created by Sokomin. All Rights Reserved.
                 -->
-            </div>
-            <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
         </div>
+        <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+    </div>
 </body>
 
 </html>
