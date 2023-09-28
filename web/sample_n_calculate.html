@@ -1,258 +1,263 @@
 <!DOCTYPE html>
-<html lang="ja">
+<!--
+  Material Design Lite
+  Copyright 2015 Google Inc. All rights reserved.
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+      https://www.apache.org/licenses/LICENSE-2.0
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License
+-->
+<html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>サンプル数の見積りと確率の検定</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=960">
+    <!-- Page styles -->
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.min.css">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="icon" href="../design/RedStoneLogo.png" sizes="32x32">
+    <link rel="icon" href="../design/RedStoneLogo.png" sizes="192x192">
+    <link rel="apple-touch-icon-precomposed" href="../design/RedStoneLogo.png">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-133658114-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'UA-133658114-1');
+    </script>
     <style>
         .container {
             max-width: 600px;
-            margin: 50px auto;
+            /* margin: 50px auto; */
             font-family: Arial, sans-serif;
+            background-color: white;
         }
 
         input[type="number"] {
-            width: 100px;
             margin-bottom: 20px;
+            width: 120px;
+            height: 30px;
+            border-radius: 5px;
+            /* display: block; */
+            padding: 2px;
+            font-size: 18px;
         }
 
         .output {
             border: 1px solid #000;
             padding: 10px;
             min-height: 150px;
+            border-radius: 5px;
+            display: block;
+            font-size: 18px;
+        }
+    </style>
+    <script type="text/javascript" src="../design/jquery-3.4.1.min.js"></script>
+    <script>
+        function enter() {
+            if (window.event.keyCode == 13) {
+                var last_keyword = $('#search-field').val();
+                window.location.href = "https://www.google.com/search?hl=ja&hq=inurl:sokomin.github.io&ie=UTF-8&oe=UTF-8&filter=0&q=" + last_keyword;
+            }
+        }
+    </script>
+    <style>
+        #view-source {
+            position: fixed;
+            display: block;
+            right: 0;
+            bottom: 0;
+            margin-right: 40px;
+            margin-bottom: 40px;
+            z-index: 900;
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <label for="p-hat">理論上の確率(p): </label>
-        <input type="number" id="p-hat" min="0" max="100" step="0.01" required>％<br>
-        <label for="actual-prob">実際の確率 (q): </label>
-        <input type="number" id="actual-prob" min="0" max="100" step="0.01" required>％<br>
-        <label for="sample-size">サンプルサイズ (n): </label>
-        <input type="number" id="sample-size" min="1" required><br>
-        <button onclick="calculateAndDisplayResults()">必要なサンプル数を計算</button>
-        <button onclick="performHypothesisTest()">検定を実行</button>
-        <div class="output" id="output"></div>
-    </div>
-    <div id="explain">
-        <h3>使い方</h3>
-        表記上の確率をpにいれます。(0～100%)<br>
-        実際に測定した確率をqにいれます。(0～100%)<br>
-        試行回数をnにいれます。<br>
-        <br>
-        (例) 40%で成功するギャンブルを20回試して10回成功したら、上から順に<br>
-        40,50,20と入れてください。<br>
-        <br>
-        必要なサンプル数だけが欲しい場合、表記上の確率だけ入力すれば算出できます。<br>
+    <title>サンプル数の見積りと確率の検定</title>
+    <meta name="description" content="">
+    <meta http-equiv="Content-Style-Type" content="text/css">
+    <meta http-equiv="Content-Script-Type" content="text/javascript">
+    <meta name="keywords" content="">
+    <!-- <link rel="alternate" type="application/rss+xml" title="RSS" href="/rss.xml"> -->
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+        <a name="container"></a>
+        <div class="android-header mdl-layout__header mdl-layout__header--waterfall">
+            <div class="mdl-layout__header-row">
+                <span class="android-title mdl-layout-title">
+                    <!-- <a href="https://sokomin.github.io/index.html">
+                        <img class="android-logo-image" src="../design/logo3.png">
+                    </a> -->
+                </span>
+                <!-- Add spacer, to align navigation to the right in desktop -->
+                <div class="android-header-spacer mdl-layout-spacer"></div>
+                <div
+                    class="android-search-box mdl-textfield mdl-js-textfield mdl-textfield--expandable mdl-textfield--floating-label mdl-textfield--align-right mdl-textfield--full-width">
+                    <label class="mdl-button mdl-js-button mdl-button--icon" for="search-field">
+                        <i class="material-icons">search</i>
+                    </label>
+                    <div class="mdl-textfield__expandable-holder">
+                        <input placeholder="サイト内検索(Enterで実行)" class="mdl-textfield__input" type="text"
+                            onkeypress="enter();" id="search-field">
+                    </div>
+                </div>
+                <!-- Navigation -->
+                <div class="android-navigation-container">
+                    <nav class="android-navigation mdl-navigation">
+                        <!-- <a class="mdl-navigation__link mdl-typography--text-uppercase"
+                            href="https://sokomin.github.io/index.html">ホーム</a>
+                        <a class="mdl-navigation__link mdl-typography--text-uppercase"
+                            href="https://sokomin.github.io/calculator.html">計算機</a>
+                        <a class="mdl-navigation__link mdl-typography--text-uppercase"
+                            href="https://sokomin.github.io/history.html">赤石史</a>
+                        <a class="mdl-navigation__link mdl-typography--text-uppercase"
+                            href="https://sokomin.github.io/link.html">リンク</a>
+                        <a class="mdl-navigation__link mdl-typography--text-uppercase"
+                            href="https://marshmallow-qa.com/sokoranominnsyu">お問合せ</a> -->
+                    </nav>
+                </div>
+                <span class="android-mobile-title mdl-layout-title">
+                    <a href="https://sokomin.github.io/index.html">
+                        <img class="android-logo-image" src="../design/logo3.png">
+                    </a>
+                </span>
+                <button class="android-more-button mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect"
+                    id="more-button">
+                    <i class="material-icons">more_vert</i>
+                </button>
+                <ul class="mdl-menu mdl-js-menu mdl-menu--bottom-right mdl-js-ripple-effect" for="more-button">
+                    <!-- <li class="mdl-menu__item">
+                        <a class="mdl-navigation__link mdl-typography--text-uppercase"
+                            href="https://sokomin.github.io/calculator.html">計算機</a>
+                    </li>
+                    <li class="mdl-menu__item">
+                        <a class="mdl-navigation__link mdl-typography--text-uppercase"
+                            href="https://sokomin.github.io/history.html">赤石史</a>
+                    </li>
+                    <li disabled class="mdl-menu__item">
+                        <a class="mdl-navigation__link mdl-typography--text-uppercase"
+                            href="https://sokomin.github.io/link.html">リンク</a>
+                    </li>
+                    <li class="mdl-menu__item">
+                        <a class="mdl-navigation__link mdl-typography--text-uppercase"
+                            href="https://marshmallow-qa.com/sokoranominnsyu">お問合せ</a>
+                    </li> -->
+                </ul>
+            </div>
+        </div>
+        <div class="android-drawer mdl-layout__drawer">
+            <!-- <span class="mdl-layout-title">
+                <h3>メニュー</h3>
+            </span>
+            <nav class="mdl-navigation">
+                <a class="mdl-navigation__link sokomin-layout-item" href="../item/item.html">
+                    <strong>アイテム</strong>
+                </a>
+                <a class="mdl-navigation__link sokomin-layout-skill" href="../skill/skill.html">
+                    <strong>スキル</strong>
+                </a>
+                <a class="mdl-navigation__link sokomin-layout-pt" href="../monster/monster.html">
+                    <strong>モンスター</strong>
+                </a>
+                <a class="mdl-navigation__link sokomin-layout-pt" href="../secret/secret.html">
+                    <strong>ダンジョン</strong>
+                </a>
+                <a class="mdl-navigation__link sokomin-layout-quest" href="../quest/quest.html">
+                    <strong>クエスト</strong>
+                </a>
+                <a class="mdl-navigation__link sokomin-layout-guild" href="../guild/guild.html">
+                    <strong>ギルド</strong>
+                </a>
+                <a class="mdl-navigation__link sokomin-layout-friend" href="../korea/korea-update.html">
+                    <strong>韓国情報</strong>
+                </a>
+                <a class="mdl-navigation__link sokomin-layout-info" href="../information/information.html">
+                    <strong>雑学</strong>
+                </a>
+            </nav> -->
+        </div>
+        <div class="android-large-table mdl-layout__content">
+            <!--main-->
+            <div class="korea-content main-background">
+                <br>
+                <h3>サンプル数の見積りと確率の検定</h3>
+                <br>
+                <div class="container">
+                    <label for="p-hat">理論上の確率(p): </label>
+                    <input type="number" id="p-hat" min="0" max="100" step="0.01" required>％<br>
+                    <label for="actual-prob">実際の確率 (q): </label>
+                    <input type="number" id="actual-prob" min="0" max="100" step="0.01" required>％<br>
+                    <label for="sample-size">サンプルサイズ (n): </label>
+                    <input type="number" id="sample-size" min="1" required><br>
+                    <button onclick="calculateAndDisplayResults()">必要なサンプル数を計算</button>
+                    <button onclick="performHypothesisTest()">検定を実行</button>
+                    <div class="output" id="output"></div>
+                </div>
+                <div id="explain">
+                    <h3>使い方</h3>
+                    表記上の確率をpにいれます。(0～100%)<br>
+                    実際に測定した確率をqにいれます。(0～100%)<br>
+                    試行回数をnにいれます。<br>
+                    <br>
+                    (例) 40%で成功するギャンブルを20回試して10回成功したら、上から順に<br>
+                    40,50,20と入れてください。<br>
+                    <br>
+                    必要なサンプル数だけが欲しい場合、表記上の確率だけ入力すれば算出できます。<br>
 
-        <br>
-        <h3>補足</h3>
-        ※二項分布、および大数の法則に従うモデルであることを前提としています。<br>
-        ※サンプルサイズの出力に当たって、信頼区間の幅は5%と定義してます。(±2.5%)<br>
-        ※小さいor大きい確率の場合は信頼区間の幅を狭めて計算しています。<br>
-        <br>
-        ※仮説検定はp=q、対立仮説はp≠qとしてます。両側検定です。<br>
-        ※<b>帰無仮説を棄却</b>の場合・・・<b>異常値（レアケース）</b>です。実際の確率が想定の範囲内とは言い難いです。<br>
-        ※<b>帰無仮説を棄却しない</b>場合・・・<b>正常値</b>です。実際の確率は想定の範囲内です。<br>
+                    <br>
+                    <h3>補足</h3>
+                    ※二項分布、および大数の法則に従うモデルであることを前提としています。<br>
+                    ※サンプルサイズの出力に当たって、信頼区間の幅は5%と定義してます。(±2.5%)<br>
+                    ※小さいor大きい確率の場合は信頼区間の幅を狭めて計算しています。<br>
+                    <br>
+                    ※仮説検定はp=q、対立仮説はp≠qとしてます。両側検定です。<br>
+                    ※<b>帰無仮説を棄却</b>の場合・・・<b>異常値（レアケース）</b>です。実際の確率が想定の範囲内とは言い難いです。<br>
+                    ※<b>帰無仮説を棄却しない</b>場合・・・<b>正常値</b>です。実際の確率は想定の範囲内です。<br>
 
-        <br>
-        <br>
-        <br>
-        <h3></h3>
-        <p><strong>信頼区間の幅とは？</strong></p>
-        <p>信頼区間は、真の値（この場合は母比率）がどの程度の範囲に存在するかを示すツールです。<br>
-            例えば、ある製品の満足度を調査したとき、サンプルから得られる満足度の割合（サンプル比率）が70%で、信頼区間が±5%だったとします。<br>
-            これは、真の満足度の割合が65%から75%の間にあることを95%の確信をもって言える、ということを意味します。</p>
-        <p>信頼区間の幅を適切設けることのメリットは以下の通りです。</p>
-        <ol>
-            <li><strong>明確な結果</strong>：5%の幅は、結果が明確であることを意味します。広すぎる信頼区間は、真の値が広い範囲に存在する可能性があることを示すため、結果の解釈を難しくします。</li>
-            <li><strong>実用的な意味</strong>：実際のビジネスや研究の現場では、あまりにも細かい差は意味をなさないことが多いです。5%の幅は、実用的な意味での差異を捉えるのに十分な精度を持っています。
-            </li>
-            <li><strong>資源の節約</strong>：サンプルサイズを増やすことで、より狭い信頼区間を得ることができますが、それはコストや時間がかかることが多いです。5%の幅は、必要なリソースを適切に使用しながら、信頼性のある結果を得るためのバランスをとるものとなります。
-            </li>
-        </ol>
-        <!-- https://bellcurve.jp/statistics/course/18227.html -->
-    </div>
-    <script>
-        var n1 = 0;
-        var n2 = 0;
-        var n3 = 0;
-        var rel_width = 0.05;
-
-        //output出力用
-        function calculateAndDisplayResults() {
-            document.getElementById('output').innerText = "";
-            var ph = 1;
-            var outputString = '';
-            // 必要なサンプルサイズ n を計算
-            outputString = calculateRequiredSampleSize(outputString, ph);
-
-            // 計算された n を使用して信頼区間を計算
-            outputString = calculateConfidenceInterval(outputString, ph);
-
-            // 信頼区間を変えてみる
-            outputString += "\n";
-            ph = 2;
-            outputString = calculateRequiredSampleSize(outputString, ph);
-
-            // 計算された n を使用して信頼区間を計算
-            outputString = calculateConfidenceInterval(outputString, ph);
-            document.getElementById('output').innerText = outputString;
-        }
-
-        // サンプルサイズ計算
-        function calculateRequiredSampleSize(outputString, phase) {
-            var p_hat = parseFloat(document.getElementById('p-hat').value) / 100;
-            var z_values = {
-                '0.9': 1.645,
-                '0.95': 1.96,
-                '0.99': 2.576
-            };
-            var z = z_values['0.95'];  // 95% 信頼区間の z 値をデフォルトとして使用
-            // var n = Math.ceil((4 * z * z * p_hat * (1 - p_hat)) / 0.05 / 0.05);
-            n1 = 0;
-            n2 = 0;
-            n3 = 0;
-            rel_width = 0.05
-
-            var i = 0;
-            if (p_hat < 0.05) {
-                rel_width = p_hat / 2;
-            }
-            if (p_hat > 0.95) {
-                rel_width = (1 - p_hat) / 2;
-            }
-            if (phase == 2) {
-                rel_width = ((0.5 - Math.abs(0.5 - p_hat)) / 2.5).toFixed(4);
-                if (rel_width < 0.01) {
-                    if (p_hat < 0.05) {
-                        rel_width = p_hat / 4;
-                    }
-                    if (p_hat > 0.95) {
-                        rel_width = (1 - p_hat) / 4;
-                    }
-                }
-            }
-            if (phase == 2) {
-                outputString += "(2) 信頼区間の幅を" + String((rel_width * 100).toFixed(2)) + "%とした場合…\n";
-            } else if (phase == 1) {
-                outputString += "(1) 信頼区間の幅を" + String((rel_width * 100).toFixed(2)) + "%とした場合…\n";
-            }
-            for (var alpha in z_values) {
-                var z = z_values[alpha];
-
-                // 幅が5%以内であるためのnの計算
-                var n = Math.ceil((4 * z * z * p_hat * (1 - p_hat)) / rel_width / rel_width);
-
-                // 結果の出力文字列の作成
-                outputString += "有意水準" + String(Number(alpha) * 100) + "%で必要なサンプルサイズ： " + n + "\n";
-                if (i == 0) {
-                    n1 = n;
-                } else if (i == 1) {
-                    n2 = n;
-                } else if (i == 2) {
-                    n3 = n;
-                }
-                i++;
-            }
-
-            return outputString;
-        }
-
-        // 信頼区間の計算（区間推定用）
-        function calculateConfidenceInterval(outputString, phase) {
-            var p_hat = parseFloat(document.getElementById('p-hat').value) / 100;
-            var z_values = {
-                '0.9': 1.645,
-                '0.95': 1.96,
-                '0.99': 2.576
-            };
-
-            outputString += "\n上記のサンプル数で区間推定をした場合…\n";
-
-            var i = 0;
-            var n = 1;
-            // 現行ロジックだと全部同じになる、逆関数状態でしかないので。一応検証も兼ねて残しておく。
-            for (var alpha in z_values) {
-                if (i == 0) {
-                    n = n1;
-                } else if (i == 1) {
-                    n = n2;
-                } else if (i == 2) {
-                    n = n3;
-                }
-                i++;
-                var z = z_values[alpha];
-                var marginOfError = z * Math.sqrt(p_hat * (1 - p_hat) / n);
-                var lowerBound = (p_hat - marginOfError) * 100;
-                var upperBound = (p_hat + marginOfError) * 100;
-                outputString += "信頼区間: [" + lowerBound.toFixed(2) + "%, " + upperBound.toFixed(2) + "%]の範囲となります。\n";
-                break;
-            }
-            return outputString;
-        }
-
-        // 検定まで実行する場合…
-        function performHypothesisTest() {
-            document.getElementById('output').innerText = "";
-            var p = parseFloat(document.getElementById('p-hat').value) / 100;
-            var n = parseInt(document.getElementById('sample-size').value);
-            var q = parseFloat(document.getElementById('actual-prob').value) / 100;  // 実際の確率 q の入力を追加する必要があります
-
-            var X = p * n;  // サンプル中の成功数
-
-            // z統計量の計算
-            var z = (X - n * q) / Math.sqrt(n * q * (1 - q));
-
-            // p値の計算(片側検定の場合…)
-            // var pValue = 1 - (0.5 * (1 + erf(z / Math.sqrt(2))));
-            // p値の両側検定
-            var pValueOneSided = 0.5 * (1 + erf(-Math.abs(z) / Math.sqrt(2)));
-            var pValue = 2 * pValueOneSided;  // 両側検定のためのp値
-
-            // 有意水準での検定結果
-            var results = {
-                '0.9': pValue < 0.1,
-                '0.95': pValue < 0.05,
-                '0.99': pValue < 0.01
-            };
-
-            var outputString = "[検定結果]\n zValue:" + z.toFixed(2) + "\n pValue:" + pValue.toFixed(4) + "\n";
-
-            for (var alpha in results) {
-                outputString += String(Number(alpha) * 100) + "%の有意水準で、";
-                outputString += results[alpha] ? "帰無仮説を棄却します。\n" : "帰無仮説を棄却しません。\n";
-            }
-
-            // 結果を出力エリアに追加
-            document.getElementById('output').innerText += "\n" + outputString;
-        }
-
-        // エラー関数
-        function erf(x) {
-            // constants
-            var a1 = 0.254829592;
-            var a2 = -0.284496736;
-            var a3 = 1.421413741;
-            var a4 = -1.453152027;
-            var a5 = 1.061405429;
-            var p = 0.3275911;
-
-            // Save the sign of x
-            var sign = (x < 0) ? -1 : 1;
-            x = Math.abs(x);
-
-            // A&S formula 7.1.26
-            var t = 1.0 / (1.0 + p * x);
-            var y = (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t;
-
-            return sign * (1 - y * Math.exp(-x * x));
-        }
-
-    </script>
+                    <br>
+                    <br>
+                    <br>
+                    <h3></h3>
+                    <p><strong>信頼区間の幅とは？</strong></p>
+                    <p>信頼区間は、真の値（この場合は母比率）がどの程度の範囲に存在するかを示すツールです。<br>
+                        例えば、ある製品の満足度を調査したとき、サンプルから得られる満足度の割合（サンプル比率）が70%で、信頼区間が±5%だったとします。<br>
+                        これは、真の満足度の割合が65%から75%の間にあることを95%の確信をもって言える、ということを意味します。</p>
+                    <p>信頼区間の幅を適切設けることのメリットは以下の通りです。</p>
+                    <ol>
+                        <li><strong>明確な結果</strong>：5%の幅は、結果が明確であることを意味します。広すぎる信頼区間は、真の値が広い範囲に存在する可能性があることを示すため、結果の解釈を難しくします。
+                        </li>
+                        <li><strong>実用的な意味</strong>：実際のビジネスや研究の現場では、あまりにも細かい差は意味をなさないことが多いです。5%の幅は、実用的な意味での差異を捉えるのに十分な精度を持っています。
+                        </li>
+                        <li><strong>資源の節約</strong>：サンプルサイズを増やすことで、より狭い信頼区間を得ることができますが、それはコストや時間がかかることが多いです。5%の幅は、必要なリソースを適切に使用しながら、信頼性のある結果を得るためのバランスをとるものとなります。
+                        </li>
+                    </ol>
+                </div>
+                <script src="js/sample_n.js"></script>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <!--書き換え禁止
+                    Copyright (c) This site is created by Sokomin. All Rights Reserved.
+                -->
+            </div>
+            <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+        </div>
 </body>
 
 </html>
