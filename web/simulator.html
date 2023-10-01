@@ -35,10 +35,6 @@
         gtag('js', new Date());
         gtag('config', 'UA-133658114-1');
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
-    <script src="js/mt.js"></script>
-    <script src="js/rand_st.js"></script>
-    <!-- 乱数を自作したらここでインポートしたげてください＋セレクタに加えてjs改修してください -->
     <style>
         .container {
             max-width: 600px;
@@ -76,37 +72,6 @@
         }
     </script>
     <style>
-        /* ボタンの基本スタイル */
-        button {
-            font-size: 18px;
-            /* 文字サイズを大きく */
-            padding: 10px 20px;
-            /* 内部の余白を調整 */
-            background-color: #007BFF;
-            /* 背景色 */
-            color: white;
-            /* 文字色 */
-            border: none;
-            /* ボーダーを非表示に */
-            border-radius: 5px;
-            /* 角を丸く */
-            cursor: pointer;
-            /* ホバー時のカーソルを指の形に */
-            transition: background-color 0.3s;
-            /* 背景色の変更をなめらかに */
-        }
-
-        /* ボタンをホバーしたときのスタイル */
-        button:hover {
-            background-color: #0056b3;
-            /* 背景色を少し暗く */
-        }
-        /* 外部ライブラリを使っているので、止む無しで!important使う */
-        .MJXc-display {
-            text-align: left !important;
-        }
-    </style>
-    <style>
         #view-source {
             position: fixed;
             display: block;
@@ -120,11 +85,11 @@
 </head>
 
 <body>
-    <title>乱数シミュレータ＆検定</title>
-    <meta name="description" content="乱数をシミュレートすることで自作乱数を作ったりその統計的検定を行うのにお使いください。">
+    <title>製作物一覧</title>
+    <meta name="description" content="計算機やシミュレータなど置き場">
     <meta http-equiv="Content-Style-Type" content="text/css">
     <meta http-equiv="Content-Script-Type" content="text/javascript">
-    <meta name="keywords" content="確率分布シミュレータ,統計的検定ツール,乱数シミュレータオンライン,乱数実験キット,そこ民">
+    <meta name="keywords" content="そこみん,そこ民,そこらの民衆">
     <!-- <link rel="alternate" type="application/rss+xml" title="RSS" href="/rss.xml"> -->
     <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
         <a name="container"></a>
@@ -226,83 +191,45 @@
             <!--main-->
             <div class="korea-content main-background">
                 <br>
-                <h2>乱数シミュレータ</h2>
+                <h2>お品書き</h2>
                 <br>
-                乱数の回数：
-                <select id="numSelector">
-                    <option value="100">100</option>
-                    <option value="1000">1000</option>
-                    <option value="10000">10000</option>
-                    <option value="100000">100000</option>
-                    <option value="1000000">1000000</option>
-                </select>
-                <br>
-                <br>
-                乱数生成方法：
-                <select id="randomMethodSelector">
-                    <option value="mathRandom">デフォルト</option>
-                    <option value="mersenneTwister">メルセンヌツイスタ</option>
-                </select>
-                <br>
-                <br>
-                <button onclick="calculate()">計算</button>
-                <br>
-                <br>
-
-                <h3>結果</h3>
-                <p>平均: <span id="mean">-</span></p>
-                <p>分散: <span id="variance">-</span></p>
-                <p>歪度: <span id="skewness">-</span></p>
-                <p>尖度: <span id="kurtosis">-</span></p>
-                <p>自己相関 (1次): <span id="autocorrelation">-</span></p>
-                <p>Kolmogorov-Smirnov D値: <span id="ksDValue">-</span></p>
-                <p>Kolmogorov-Smirnov 臨界値 (近似, α=0.05): <span id="ksCriticalValue">-</span></p>
-                <p>Kolmogorov-Smirnov 検定結果 (α=0.05): <span id="ksTestResult">-</span></p>
+                <div class="page_index">
+                    <table id="table10" style="max-width:960px">
+                        <tbody>
+                            <!-- <tr>
+                                <th colspan="3">シミュレータ</th>
+                            </tr> -->
+                            <tr>
+                                <th colspan="3">統計ツール</th>
+                            </tr>
+                            <tr>
+                                <td><a href="sample_n_calculate.html">サンプル数の見積りと確率の検定</a></td>
+                                <td><a href="sample_n_calculate.html">乱数シミュレータ＆検定</a></td>
+                                <td><a href="sample_n_calculate.html"></a></td>
+                                <!-- <td><a href="#1"><img src="creature_info/00_outline.png" width="45px"
+                                            height="45px"><br>▼概要</a></td>
+                                <td><a href="#2"><img src="creature_info/00_party.png" width="45px"
+                                            height="45px"><br>▼育成</a></td>
+                                <td><a href="#3"><img src="creature_info/01_enhance.png" width="45px"
+                                            height="45px"><br>▼強化</a></td> -->
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
                 <br>
                 <br>
                 <br>
                 <br>
-
-                <!-- 数式を表示 -->
-                <h4>使用した数式</h4>
-                <p>歪度（Skewness）:
-                    \[ \text{Skewness} = \frac{n}{(n-1)(n-2)} \left( \sum \left( \frac{X_i - \mu}{\sigma} \right)^3
-                    \right) \]
-                </p>
-                <p>尖度（Kurtosis）:
-                    \[ \text{Kurtosis} = \frac{n(n+1)}{(n-1)(n-2)(n-3)} \left( \sum \left( \frac{X_i - \mu}{\sigma}
-                    \right)^4 \right) - \frac{3(n-1)^2}{(n-2)(n-3)} \]
-                </p>
-                <p>自己相関（1次）:
-                    \[ \rho(1) = \frac{\sum_{i=1}^{n-1} (X_i - \bar{X})(X_{i+1} - \bar{X})}{\sum_{i=1}^{n} (X_i -
-                    \bar{X})^2} \]
-                </p>
-                <br>
-                ※Kolmogorov-Smirnov検定(KS検定)はサンプルデータが一様分布に従っているという仮説が合理的であるかどうかに使われます。<br>
-                [参考]<a
-                    href="https://ja.wikipedia.org/wiki/%E3%82%B3%E3%83%AB%E3%83%A2%E3%82%B4%E3%83%AD%E3%83%95%E2%80%93%E3%82%B9%E3%83%9F%E3%83%AB%E3%83%8E%E3%83%95%E6%A4%9C%E5%AE%9A">コルモゴロフ–スミルノフ検定</a>(Wikipedia)<br>
-                <br>
-                ※本ページは、デフォルトではjavsScriptの<b>Math.random()</b>を使って検証しています。<br>
-                メルセンヌツイスタは<a href="https://magicant.github.io/sjavascript/mt.html">Mersenne Twister in
-                    JavaScript</a>を利用しています。<br>
                 <br>
                 <br>
-            </div>
-            <script src="js/sample_n.js"></script>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <!--書き換え禁止
+                <br>
+                <br>
+                <!--書き換え禁止
                     Copyright (c) This site is created by Sokomin. All Rights Reserved.
                 -->
+            </div>
+            <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
         </div>
-        <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
-    </div>
 </body>
 
 </html>
