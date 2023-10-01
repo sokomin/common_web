@@ -116,6 +116,35 @@ function calculateConfidenceInterval(outputString, phase) {
     return outputString;
 }
 
+
+// z値を返す
+function getZValueForConfidenceLevel(conf_level){
+    if(conf_level=='0.9'){
+        return 1.645;
+    }
+    if(conf_level=='0.95'){
+        return 1.96;
+    }
+    if(conf_level=='0.99'){
+        return 2.576;
+    }
+}
+
+
+// 母比率の差の信頼区間を調べる関数
+function calculateConfidenceInterval(p, q, n, conf_level) {
+
+    const z = getZValueForConfidenceLevel(conf_level);
+    const se = Math.sqrt(p*(1-p)/n + q*(1-q)/n);
+
+    const lowerBound = ((p - q) - z * se)*100;
+    const upperBound = ((p - q) + z * se)*100;
+
+    // document.getElementById("result").innerText = `信頼区間: [${lowerBound.toFixed(4)}, ${upperBound.toFixed(4)}]`;
+    return `差の信頼区間: [${lowerBound.toFixed(2)}%, ${upperBound.toFixed(2)}%]\n`;
+}
+
+
 // 検定まで実行する場合…
 function performHypothesisTest() {
     document.getElementById('output').innerText = "";
@@ -146,6 +175,10 @@ function performHypothesisTest() {
     for (var alpha in results) {
         outputString += String(Number(alpha) * 100) + "%の有意水準で、";
         outputString += results[alpha] ? "帰無仮説を棄却します。\n" : "帰無仮説を棄却しません。\n";
+        // nが十分に大きければ差の信頼区間を出してもある程度信憑性が出てくる
+        if(n > 1000){
+            outputString += calculateConfidenceInterval(p, q, n, alpha);
+        }
     }
 
     // 結果を出力エリアに追加
