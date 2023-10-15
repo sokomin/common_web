@@ -144,8 +144,14 @@ function sortHand(hand) {
     return hand.sort((a, b) => {
         const suitA = a[0];
         const suitB = b[0];
-        const numberA = parseInt(a[1] || 0);
-        const numberB = parseInt(b[1] || 0);
+        let numberA = parseInt(a[1] || -1);
+        let numberB = parseInt(b[1] || -1);
+        if(numberA==0){
+            numberA = 5;
+        }
+        if(numberB==0){
+            numberB = 5;
+        }
 
         if (suitA === suitB) {
             return numberA - numberB;

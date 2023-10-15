@@ -35,6 +35,8 @@
         gtag('js', new Date());
         gtag('config', 'UA-133658114-1');
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <script src="js/mt.js"></script>
     <style>
         .container {
             max-width: 600px;
@@ -72,6 +74,60 @@
         }
     </script>
     <style>
+        .circle {
+            margin-top: 100px;
+            margin-left: 100px;
+            position: absolute;
+            border-radius: 50%;
+            border: 1px solid black;
+            transition: top 10s, left 10s, width 10s, height 10s;
+            /* Initially, all circles are hidden */
+            opacity: 0;
+            /* 逆に全部出したい時はこれ外す */
+        }
+
+        .random-dot {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background-color: red;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+    </style>
+    <style>
+        /* ボタンの基本スタイル */
+        button {
+            font-size: 18px;
+            /* 文字サイズを大きく */
+            padding: 10px 20px;
+            /* 内部の余白を調整 */
+            background-color: #007BFF;
+            /* 背景色 */
+            color: white;
+            /* 文字色 */
+            border: none;
+            /* ボーダーを非表示に */
+            border-radius: 5px;
+            /* 角を丸く */
+            cursor: pointer;
+            /* ホバー時のカーソルを指の形に */
+            transition: background-color 0.3s;
+            /* 背景色の変更をなめらかに */
+        }
+
+        /* ボタンをホバーしたときのスタイル */
+        button:hover {
+            background-color: #0056b3;
+            /* 背景色を少し暗く */
+        }
+
+        /* 外部ライブラリを使っているので、止む無しで!important使う */
+        .MJXc-display {
+            text-align: left !important;
+        }
+    </style>
+    <style>
         #view-source {
             position: fixed;
             display: block;
@@ -85,11 +141,11 @@
 </head>
 
 <body>
-    <title>製作物一覧</title>
-    <meta name="description" content="計算機やシミュレータなど置き場">
+    <title>セーフエリアシミュレータ</title>
+    <meta name="description" content="手牌配ったりなど">
     <meta http-equiv="Content-Style-Type" content="text/css">
     <meta http-equiv="Content-Script-Type" content="text/javascript">
-    <meta name="keywords" content="そこみん,そこ民,そこらの民衆">
+    <meta name="keywords" content="安置,セーフエリア,シミュレータ,そこみん,そこ民">
     <!-- <link rel="alternate" type="application/rss+xml" title="RSS" href="/rss.xml"> -->
     <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
         <a name="container"></a>
@@ -191,39 +247,7 @@
             <!--main-->
             <div class="korea-content main-background">
                 <br>
-                <h2>お品書き</h2>
-                <br>
-                <div class="page_index">
-                    <table id="table10" style="max-width:960px">
-                        <tbody>
-                            <tr>
-                                <th colspan="3">統計ツール</th>
-                            </tr>
-                            <tr>
-                                <td><a href="sample_n_calculate.html">サンプル数の見積りと確率の検定</a></td>
-                                <td><a href="rand_statistical_test.html">乱数シミュレータ＆検定</a></td>
-                                <td><a href="sample_n_calculate.html"></a></td>
-                                <!-- <td><a href="#1"><img src="creature_info/00_outline.png" width="45px"
-                                            height="45px"><br>▼概要</a></td>
-                                <td><a href="#2"><img src="creature_info/00_party.png" width="45px"
-                                            height="45px"><br>▼育成</a></td>
-                                <td><a href="#3"><img src="creature_info/01_enhance.png" width="45px"
-                                            height="45px"><br>▼強化</a></td> -->
-                            </tr>
-                            <tr>
-                                <td colspan="3"></td>
-                            </tr>
-                            <tr>
-                                <th colspan="3">シミュレータ</th>
-                            </tr>
-                            <tr>
-                                <td><a href="marjong_pai_simulator.html">麻雀の山牌</a></td>
-                                <td><a href="safe_area.html">セーフエリア</a></td>
-                                <td><a href="sample_n_calculate.html"></a></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                <h2>セーフエリアシミュレータ</h2>
                 <br>
                 <br>
                 <br>
@@ -232,12 +256,88 @@
                 <br>
                 <br>
                 <br>
-                <!--書き換え禁止
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+            </div>
+            <script src="js/safe_area.js"></script>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <!--書き換え禁止
                     Copyright (c) This site is created by Sokomin. All Rights Reserved.
                 -->
-            </div>
-            <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
         </div>
+        <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+    </div>
 </body>
 
 </html>
