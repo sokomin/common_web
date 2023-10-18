@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<!--
+  Material Design Lite
+  Copyright 2015 Google Inc. All rights reserved.
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+      https://www.apache.org/licenses/LICENSE-2.0
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License
+-->
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=960">
+    <!-- Page styles -->
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.min.css">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="icon" href="../design/RedStoneLogo.png" sizes="32x32">
+    <link rel="icon" href="../design/RedStoneLogo.png" sizes="192x192">
+    <link rel="apple-touch-icon-precomposed" href="../design/RedStoneLogo.png">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-133658114-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'UA-133658114-1');
+    </script>
+    <script type="text/javascript" src="../design/jquery-3.4.1.min.js"></script>
+    <script>
+        function enter() {
+            if (window.event.keyCode == 13) {
+                var last_keyword = $('#search-field').val();
+                window.location.href = "https://www.google.com/search?hl=ja&hq=inurl:sokomin.github.io&ie=UTF-8&oe=UTF-8&filter=0&q=" + last_keyword;
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="mj/pai.css">
+    <style>
+        /* ボタンの基本スタイル */
+        button {
+            font-size: 18px;
+            /* 文字サイズを大きく */
+            padding: 10px 20px;
+            /* 内部の余白を調整 */
+            background-color: #007BFF;
+            /* 背景色 */
+            color: white;
+            /* 文字色 */
+            border: none;
+            /* ボーダーを非表示に */
+            border-radius: 5px;
+            /* 角を丸く */
+            cursor: pointer;
+            /* ホバー時のカーソルを指の形に */
+            transition: background-color 0.3s;
+            /* 背景色の変更をなめらかに */
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0px;
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 0px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 20px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+        }
+
+        /* ボタンをホバーしたときのスタイル */
+        button:hover {
+            background-color: #0056b3;
+            /* 背景色を少し暗く */
+        }
+
+        /* 外部ライブラリを使っているので、止む無しで!important使う */
+        .MJXc-display {
+            text-align: left !important;
+        }
+    </style>
+    <style>
+        #view-source {
+            position: fixed;
+            display: block;
+            right: 0;
+            bottom: 0;
+            margin-right: 40px;
+            margin-bottom: 40px;
+            z-index: 900;
+        }
+    </style>
+</head>
+
+<body>
+    <title>タイムスタンプ・日付変換</title>
+    <meta name="description" content="タイムスタンプと日付の変換を行います。タイムゾーン対応版。">
+    <meta http-equiv="Content-Style-Type" content="text/css">
+    <meta http-equiv="Content-Script-Type" content="text/javascript">
+    <meta name="keywords" content="timestamp,date,シミュレータ,タイムゾーン,そこ民">
+    <!-- <link rel="alternate" type="application/rss+xml" title="RSS" href="/rss.xml"> -->
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+        <a name="container"></a>
+        <div class="android-header mdl-layout__header mdl-layout__header--waterfall">
+            <div class="mdl-layout__header-row">
+                <span class="android-title mdl-layout-title">
+                    <!-- <a href="https://sokomin.github.io/index.html">
+                        <img class="android-logo-image" src="../design/logo3.png">
+                    </a> -->
+                </span>
+                <!-- Add spacer, to align navigation to the right in desktop -->
+                <div class="android-header-spacer mdl-layout-spacer"></div>
+                <div
+                    class="android-search-box mdl-textfield mdl-js-textfield mdl-textfield--expandable mdl-textfield--floating-label mdl-textfield--align-right mdl-textfield--full-width">
+                    <label class="mdl-button mdl-js-button mdl-button--icon" for="search-field">
+                        <i class="material-icons">search</i>
+                    </label>
+                    <div class="mdl-textfield__expandable-holder">
+                        <input placeholder="サイト内検索(Enterで実行)" class="mdl-textfield__input" type="text"
+                            onkeypress="enter();" id="search-field">
+                    </div>
+                </div>
+                <!-- Navigation -->
+                <div class="android-navigation-container">
+                    <nav class="android-navigation mdl-navigation">
+                        <!-- <a class="mdl-navigation__link mdl-typography--text-uppercase"
+                            href="https://sokomin.github.io/index.html">ホーム</a>
+                        <a class="mdl-navigation__link mdl-typography--text-uppercase"
+                            href="https://sokomin.github.io/calculator.html">計算機</a>
+                        <a class="mdl-navigation__link mdl-typography--text-uppercase"
+                            href="https://sokomin.github.io/history.html">赤石史</a>
+                        <a class="mdl-navigation__link mdl-typography--text-uppercase"
+                            href="https://sokomin.github.io/link.html">リンク</a>
+                        <a class="mdl-navigation__link mdl-typography--text-uppercase"
+                            href="https://marshmallow-qa.com/sokoranominnsyu">お問合せ</a> -->
+                    </nav>
+                </div>
+                <span class="android-mobile-title mdl-layout-title">
+                    <a href="https://sokomin.github.io/index.html">
+                        <img class="android-logo-image" src="../design/logo3.png">
+                    </a>
+                </span>
+                <button class="android-more-button mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect"
+                    id="more-button">
+                    <i class="material-icons">more_vert</i>
+                </button>
+                <ul class="mdl-menu mdl-js-menu mdl-menu--bottom-right mdl-js-ripple-effect" for="more-button">
+                    <!-- <li class="mdl-menu__item">
+                        <a class="mdl-navigation__link mdl-typography--text-uppercase"
+                            href="https://sokomin.github.io/calculator.html">計算機</a>
+                    </li>
+                    <li class="mdl-menu__item">
+                        <a class="mdl-navigation__link mdl-typography--text-uppercase"
+                            href="https://sokomin.github.io/history.html">赤石史</a>
+                    </li>
+                    <li disabled class="mdl-menu__item">
+                        <a class="mdl-navigation__link mdl-typography--text-uppercase"
+                            href="https://sokomin.github.io/link.html">リンク</a>
+                    </li>
+                    <li class="mdl-menu__item">
+                        <a class="mdl-navigation__link mdl-typography--text-uppercase"
+                            href="https://marshmallow-qa.com/sokoranominnsyu">お問合せ</a>
+                    </li> -->
+                </ul>
+            </div>
+        </div>
+        <div class="android-drawer mdl-layout__drawer">
+            <!-- <span class="mdl-layout-title">
+                <h3>メニュー</h3>
+            </span>
+            <nav class="mdl-navigation">
+                <a class="mdl-navigation__link sokomin-layout-item" href="../item/item.html">
+                    <strong>アイテム</strong>
+                </a>
+                <a class="mdl-navigation__link sokomin-layout-skill" href="../skill/skill.html">
+                    <strong>スキル</strong>
+                </a>
+                <a class="mdl-navigation__link sokomin-layout-pt" href="../monster/monster.html">
+                    <strong>モンスター</strong>
+                </a>
+                <a class="mdl-navigation__link sokomin-layout-pt" href="../secret/secret.html">
+                    <strong>ダンジョン</strong>
+                </a>
+                <a class="mdl-navigation__link sokomin-layout-quest" href="../quest/quest.html">
+                    <strong>クエスト</strong>
+                </a>
+                <a class="mdl-navigation__link sokomin-layout-guild" href="../guild/guild.html">
+                    <strong>ギルド</strong>
+                </a>
+                <a class="mdl-navigation__link sokomin-layout-friend" href="../korea/korea-update.html">
+                    <strong>韓国情報</strong>
+                </a>
+                <a class="mdl-navigation__link sokomin-layout-info" href="../information/information.html">
+                    <strong>雑学</strong>
+                </a>
+            </nav> -->
+        </div>
+        <div class="android-large-table mdl-layout__content">
+            <!--main-->
+            <div class="korea-content main-background">
+                <br>
+                <h2>タイムゾーン・日付変換</h2>
+                <br>
+                <div class="container">
+
+                    <label for="timestamp_ms">タイムスタンプ (ms):</label>
+                    <input type="text" id="timestamp_ms" name="timestamp_ms">
+                    <label for="timestamp_s">タイムスタンプ (s):</label>
+                    <input type="text" id="timestamp_s" name="timestamp_s">
+                    <label>日時</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="number" id="year" name="year" placeholder="Year">年
+                        <input type="number" id="month" name="month" placeholder="Month">月
+                        <input type="number" id="day" name="day" placeholder="Day">日
+                        <input type="number" id="hour" name="hour" placeholder="Hour">時
+                        <input type="number" id="minute" name="minute" placeholder="Minute">分
+                        <input type="number" id="second" name="second" placeholder="Second">秒
+                    </div>
+
+                    <label for="timezone">Time Zone:</label>
+                    <select id="timezone" name="timezone">
+                        <option value="-720">(UTC-12:00) 国際日付変更線 西側</option>
+                        <option value="-660">(UTC-11:00) 協定世界時-11</option>
+                        <option value="-600">(UTC-10:00) ハワイ</option>
+                        <option value="-540">(UTC-09:00) アラスカ</option>
+                        <option value="-480">(UTC-08:00) バハカリフォルニア</option>
+                        <option value="-480">(UTC-08:00) 太平洋標準時(米国およびカナダ)</option>
+                        <option value="-420">(UTC-07:00) チワワ、ラパス、マサトラン</option>
+                        <option value="-420">(UTC-07:00) アリゾナ</option>
+                        <option value="-420">(UTC-07:00) 山地標準時(米国およびカナダ)</option>
+                        <option value="-360">(UTC-06:00) 中央アメリカ</option>
+                        <option value="-360">(UTC-06:00) 中部標準時(米国およびカナダ)</option>
+                        <option value="-360">(UTC-06:00) サスカチュワン</option>
+                        <option value="-360">(UTC-06:00) グアダラハラ、メキシコシティ、モンテレー</option>
+                        <option value="-300">(UTC-05:00) ボゴタ、リマ、キト</option>
+                        <option value="-300">(UTC-05:00) インディアナ東部</option>
+                        <option value="-300">(UTC-05:00) 東部標準時(米国およびカナダ)</option>
+                        <option value="-270">(UTC-04:30) カラカス</option>
+                        <option value="-240">(UTC-04:00) 大西洋標準時(カナダ)</option>
+                        <option value="-240">(UTC-04:00) アスンシオン</option>
+                        <option value="-240">(UTC-04:00) ジョージタウン、ラパス、マナウス、サンフアン</option>
+                        <option value="-240">(UTC-04:00) クイアバ</option>
+                        <option value="-240">(UTC-04:00) サンチアゴ</option>
+                        <option value="-210">(UTC-03:30) ニューファンドランド</option>
+                        <option value="-180">(UTC-03:00) ブラジリア</option>
+                        <option value="-180">(UTC-03:00) グリーンランド</option>
+                        <option value="-180">(UTC-03:00) カイエンヌ、フォルタレザ</option>
+                        <option value="-180">(UTC-03:00) ブエノスアイレス</option>
+                        <option value="-180">(UTC-03:00) モンテビデオ</option>
+                        <option value="-120">(UTC-02:00) 協定世界時-2</option>
+                        <option value="-60">(UTC-01:00) カーボベルデ諸島</option>
+                        <option value="-60">(UTC-01:00) アゾレス</option>
+                        <option value="0">(UTC+00:00) カサブランカ</option>
+                        <option value="0">(UTC+00:00) モンロビア、レイキャビク</option>
+                        <option value="0">(UTC+00:00) ダブリン、エジンバラ、リスボン、ロンドン</option>
+                        <option value="0">(UTC+00:00) 協定世界時</option>
+                        <option value="60">(UTC+01:00) アムステルダム、ベルリン、ベルン、ローマ、ストックホルム、ウィーン</option>
+                        <option value="60">(UTC+01:00) ブリュッセル、コペンハーゲン、マドリード、パリ</option>
+                        <option value="60">(UTC+01:00) 西中央アフリカ</option>
+                        <option value="60">(UTC+01:00) ベオグラード、ブラチスラバ、ブダペスト、リュブリャナ、プラハ</option>
+                        <option value="60">(UTC+01:00) サラエボ、スコピエ、ワルシャワ、ザグレブ</option>
+                        <option value="60">(UTC+01:00) ウィントフック</option>
+                        <option value="120">(UTC+02:00) アテネ、ブカレスト、イスタンブール</option>
+                        <option value="120">(UTC+02:00) ヘルシンキ、キーウ、リガ、ソフィア、タリン、ビリニュス</option>
+                        <option value="120">(UTC+02:00) カイロ</option>
+                        <option value="120">(UTC+02:00) ダマスカス</option>
+                        <option value="120">(UTC+02:00) アンマン</option>
+                        <option value="120">(UTC+02:00) ハラーレ、プレトリア</option>
+                        <option value="120">(UTC+02:00) エルサレム</option>
+                        <option value="120">(UTC+02:00) ベイルート</option>
+                        <option value="180">(UTC+03:00) バグダッド</option>
+                        <option value="180">(UTC+03:00) ミンスク</option>
+                        <option value="180">(UTC+03:00) クエート、リヤド</option>
+                        <option value="180">(UTC+03:00) ナイロビ</option>
+                        <option value="210">(UTC+03:30) テヘラン</option>
+                        <option value="240">(UTC+04:00) モスクワ、サンクトペテルブルグ、ボルゴグラード</option>
+                        <option value="240">(UTC+04:00) トビリシ</option>
+                        <option value="240">(UTC+04:00) エレバン</option>
+                        <option value="240">(UTC+04:00) アブダビ、マスカット</option>
+                        <option value="240">(UTC+04:00) バクー</option>
+                        <option value="240">(UTC+04:00) ポートルイス</option>
+                        <option value="270">(UTC+04:30) カブール</option>
+                        <option value="300">(UTC+05:00) タシケント</option>
+                        <option value="300">(UTC+05:00) イスラマバード、カラチ</option>
+                        <option value="330">(UTC+05:30) スリジャヤワルダナプラコッテ</option>
+                        <option value="330">(UTC+05:30) チェンナイ、コルカタ、ムンバイ、ニューデリー</option>
+                        <option value="345">(UTC+05:45) カトマンズ</option>
+                        <option value="360">(UTC+06:00) アスタナ</option>
+                        <option value="360">(UTC+06:00) ダッカ</option>
+                        <option value="360">(UTC+06:00) エカテリンブルグ</option>
+                        <option value="390">(UTC+06:30) ヤンゴン</option>
+                        <option value="420">(UTC+07:00) バンコク、ハノイ、ジャカルタ</option>
+                        <option value="420">(UTC+07:00) ノヴォシビルスク</option>
+                        <option value="480">(UTC+08:00) クラスノヤルスク</option>
+                        <option value="480">(UTC+08:00) ウランバートル</option>
+                        <option value="480">(UTC+08:00) 北京、重慶、香港、ウルムチ</option>
+                        <option value="480">(UTC+08:00) パース</option>
+                        <option value="480">(UTC+08:00) クアラルンプール、シンガポール</option>
+                        <option value="480">(UTC+08:00) 台北</option>
+                        <option value="540" selected>(UTC+09:00) 大阪、札幌、東京</option>
+                        <option value="540">(UTC+09:00) イルクーツク</option>
+                        <option value="540">(UTC+09:00) ソウル</option>
+                        <option value="570">(UTC+09:30) ダーウィン</option>
+                        <option value="570">(UTC+09:30) アデレード</option>
+                        <option value="600">(UTC+10:00) ホバート</option>
+                        <option value="600">(UTC+10:00) ヤクーツク</option>
+                        <option value="600">(UTC+10:00) ブリスベン</option>
+                        <option value="600">(UTC+10:00) グアム、ポートモレスビー</option>
+                        <option value="600">(UTC+10:00) キャンベラ、メルボルン、シドニー</option>
+                        <option value="660">(UTC+11:00) ウラジオストク</option>
+                        <option value="660">(UTC+11:00) ソロモン諸島、ニューカレドニア</option>
+                        <option value="720">(UTC+12:00) 協定世界時+12</option>
+                        <option value="720">(UTC+12:00) フィジー、マーシャル諸島</option>
+                        <option value="720">(UTC+12:00) マガダン</option>
+                        <option value="720">(UTC+12:00) オークランド、ウェリントン</option>
+                        <option value="780">(UTC+13:00) ヌクアロファ</option>
+                        <option value="780">(UTC+13:00) サモア</option>
+                    </select> <br>
+                </div>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+            </div>
+            <script src="js/timstamp.js"></script>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <!--書き換え禁止
+                    Copyright (c) This site is created by Sokomin. All Rights Reserved.
+                -->
+        </div>
+        <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+    </div>
+</body>
+
+</html>
